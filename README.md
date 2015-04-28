@@ -16,8 +16,13 @@
 * ssh to your webserver
 * create a new folder on your machine which is a sibling of your moodle installations
 * cd to this folder, e.g. `cd moodle_rake`
-* `$ git clone -b RELEASE git://github.com/bwl21/moodle_rake.git` in case of a new installation
+* `$ git clone -b release https://github.com/bwl21/moodle_rake.git .` in case of a new installation
 * `$ git pull` to update
+* 
+
+## usage
+
+
 
 ## Contributing
 

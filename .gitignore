@@ -6,3 +6,6 @@ workspace.xml
 .idea/modules.xml
 .idea/vcs.xml
 moodle_dev_cron_backup.sh
+moodle_data
+tmp
+install_config

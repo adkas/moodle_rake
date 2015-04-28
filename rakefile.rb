@@ -2,8 +2,14 @@
 # on a given webserver
 # see readme for details.
 
-SCRIPT_ROOT   = File.dirname(__FILE__)
-BACKUP_FOLDER = %Q{#{SCRIPT_ROOT}/../moodle_backups}
+SCRIPT_ROOT        = File.dirname(__FILE__)
+BACKUP_FOLDER      = %Q{#{SCRIPT_ROOT}/../moodle_backups}
+
+# these dirs are used for restore
+
+MOODLE_CODE_DIR    = "moodle_code"
+INSTALL_CONFIG_DIR = "install_config"
+TEMP_DIR           = 'tmp'
 
 
 class MoodleRakeHelper
@@ -46,9 +52,15 @@ class MoodleRakeHelper
 
     result
   end
+
+  def loadInstanceConfig
+
+  end
+
 end
 
 class MoodleInstance
+
   def initialize(name, configfilename)
     @attributes              = {}
     @attributes[:name]       = name
@@ -113,6 +125,9 @@ class MoodleInstance
     nil
   end
 
+  def [](key)
+    @attributes[key]
+  end
 
   private
 
@@ -152,7 +167,7 @@ end
 desc 'show available backups'
 task :showBackups do
   backupfiles = Dir["#{BACKUP_FOLDER}/*_files.gz"]
-  backupnames = backupfiles.map{|f| File.basename(f, "_files.gz")}
+  backupnames = backupfiles.map { |f| File.basename(f, "_files.gz") }
   puts backupnames
 end
 
@@ -205,6 +220,63 @@ task :backupCode, [:instance] do |task, args|
     #   puts e
     #   puts caller
   end
+end
+
+
+desc 'restore moodle instance from backup'
+task :restore, [:backup] do |task, args|
+  target_config_filename = "install_config/config.php"
+  moodle_target_instance = MoodleInstance.new("", target_config_filename)
+  backupname             = args[:backup]
+
+  system "rm -rf #{TEMP_DIR}" if File.directory?(TEMP_DIR)
+  FileUtils.mkdir_p(TEMP_DIR)
+
+  backupfiles = ['files', 'database', 'moodlecode'].inject({}) { |result, value|
+    result[value] = Dir["#{BACKUP_FOLDER}/#{backupname}_#{value}.gz"].first
+    result
+  }
+
+
+  # cleanup the destination
+  system "rm -rf '#{MOODLE_CODE_DIR}'"
+  system "rm -rf '#{moodle_target_instance[:dataroot]}'"
+
+  # unpack the files
+  cd TEMP_DIR do
+    system "tar -vxzf '#{backupfiles['files']}'"
+    got_data_folder = Dir["*"].first
+    system "mv '#{got_data_folder}' '#{moodle_target_instance[:dataroot]}'"
+
+    system "tar -vxzf '#{backupfiles['moodlecode']}'"
+    got_code_folder = Dir["*"].first
+
+    moodle_source_instance = MoodleInstance.new("source", "#{got_code_folder}/config.php")
+    system "mv '#{got_code_folder}' '../#{MOODLE_CODE_DIR}'"
+
+    system "gunzip -c  '#{backupfiles['database']}' > database.sql"
+
+    # patch the url
+    sql = File.open('database.sql').read
+    File.open('database_target.sql', "w") do |f|
+      f.puts sql.gsub(moodle_source_instance[:wwwroot], moodle_target_instance[:wwwroot])
+    end
+  end
+
+  # now import the database
+  dbuser = moodle_target_instance[:dbuser]
+  dbhost = moodle_target_instance[:dbhost]
+  dbpass = moodle_target_instance[:dbpass]
+  dbname = moodle_target_instance[:dbname]
+
+  cmd = "mysql --default-character-set=utf8 -u#{dbuser} -p'#{dbpass}' -h#{dbhost} -D#{dbname} < tmp/database_target.sql"
+  puts cmd
+  system "cmd"
+
+  # finally copy the config file
+  cmd = "cp '#{target_config_filename}' '#{MOODLE_CODE_DIR}/config.php'"
+  puts cmd
+  system cmd
 end
 
 

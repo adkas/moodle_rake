@@ -1,28 +1,33 @@
 # moodle_rake
 
-`moodle_rake` is a simple rake file to perform server side moodle maintenance tasks. Assuming that there are multiple moodle instances on the same server it provides the following tasks
+`moodle_rake` is a simple rake file to perform server side moodle
+maintenance tasks. Assuming that there are multiple moodle instances on
+the same server it provides the following tasks
 
--  **rake showInstances**: list all instances on the machine. Instances are found by searching for moodle config files
--  **rake backup[instance]**: perform a site backup of that instance
--  **rake showBackups**: show all available backups
--  **rake restore[backup,instance]**: restore the backup to a particular instance
+-   **rake showInstances**: list all instances on the machine. Instances
+    are found by searching for moodle config files
+-   **rake backup[instance]**: perform a site backup of that instance
+-   **rake backupData[instance]**: perform a site backup of only database and files of that instance
+-   **rake backupCode[instance]**: perform a site backup of only code of that instance
+-   **rake showBackups**: show all available backups
+-   **rake restore[backup,instance]**: restore the backup to a
+    particular instance
 
 ## prerequisites
 
-* ruby 1.8.7 
+-   ruby 1.8.7
 
 ## Installation
 
-* ssh to your webserver
-* create a new folder on your machine which is a sibling of your moodle installations
-* cd to this folder, e.g. `cd moodle_rake`
-* `$ git clone -b release https://github.com/bwl21/moodle_rake.git .` in case of a new installation
-* `$ git pull` to update
-* 
+-   ssh to your webserver
+-   create a new folder on your machine which is a sibling of your
+    moodle installations
+-   cd to this folder, e.g. `cd moodle_rake`
+-   `$ git clone -b release https://github.com/bwl21/moodle_rake.git .`
+    in case of a new installation
+-   `$ git pull` to update
 
 ## usage
-
-
 
 ## Contributing
 

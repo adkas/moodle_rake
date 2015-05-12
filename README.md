@@ -2,18 +2,8 @@
 
 `moodle_rake` is a simple rake file to perform server side moodle
 maintenance tasks. Assuming that there are multiple moodle instances on
-the same server it provides the following tasks
+the same server it provides backup / restore tasks.
 
--   **rake showInstances**: list all instances on the machine. Instances
-    are found by searching for moodle config files
--   **rake backup[instance]**: perform a site backup of that instance
--   **rake backupData[instance]**: perform a site backup of only
-    database and files of that instance
--   **rake backupCode[instance]**: perform a site backup of only code of
-    that instance
--   **rake showBackups**: show all available backups
--   **rake restore[backup,instance]**: restore the backup to a
-    particular instance
 
 ## prerequisites
 

@@ -289,7 +289,7 @@ task :restore, [:backup] do |task, args|
 
   cmd = "mysql --default-character-set=utf8 -u#{dbuser} -p'#{dbpass}' -h#{dbhost} -D#{dbname} < tmp/database_target.sql"
   puts cmd
-  system "cmd"
+  system cmd
 
   # finally copy the config file
   cmd = "cp '#{target_config_filename}' '#{MOODLE_CODE_DIR}/config.php'"

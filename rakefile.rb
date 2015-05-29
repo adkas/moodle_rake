@@ -169,7 +169,7 @@ end
 desc 'show available backups'
 task :showBackups do
   backupfiles = Dir["#{BACKUP_FOLDER}/*_files.gz"]
-  backupnames = backupfiles.map { |f| File.basename(f, "_files.gz") }
+  backupnames = backupfiles.map { |f| File.basename(f, "_files.gz") }.sort
   puts backupnames
 end
 

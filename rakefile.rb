@@ -72,7 +72,7 @@ class MoodleInstance
     @backupdir               = BACKUP_FOLDER
 
     FileUtils.mkdir_p(@backupdir)
-    @backupbase = %Q{#{@backupdir}/#{@attributes[:name]}_#{@timestamp}}
+    @backupbase = %Q{#{@backupdir}/#{@attributes[:name]}}
 
     parse(configfilename)
   end
@@ -127,14 +127,26 @@ class MoodleInstance
     nil
   end
 
+  def purge_backup(index = 1)
+    backup_file = mk_backup_filename('files', index)
+    if File.exist?(backup_file)
+      ['files', 'moodlecode', 'database'].each do |part|
+        [2, 1].each do |index|
+          cmd = %Q{mv -f #{mk_backup_filename(part, index)} #{mk_backup_filename(part, index+1)}}
+          system cmd
+        end
+      end
+    end
+  end
+
   def [](key)
     @attributes[key]
   end
 
   private
 
-  def mk_backup_filename(part)
-    %Q{#{@backupbase}_#{part}.gz}
+  def mk_backup_filename(part, index = 1)
+    %Q{#{@backupbase}_#{index}_#{part}.gz}
   end
 
   def parse(configfilename)
@@ -176,7 +188,8 @@ end
 desc 'backup current instance'
 task :backup do
   instancename = File.basename(SCRIPT_ROOT)
-  instance = MoodleInstance.new(instancename, 'moodle_code/config.php')
+  instance     = MoodleInstance.new(instancename, 'moodle_code/config.php')
+  instance.purge_backup
   instance.backup_database
   instance.backup_files
   instance.backup_moodlecode
@@ -199,8 +212,7 @@ task :backupInstance, [:instance] do |task, args|
   end
 end
 
-
-desc 'backup data a particular instance'
+desc 'backup data only for a particular instance'
 task :backupData, [:instance] do |task, args|
   begin
     instance = @moodle.loadInstance(args[:instance])
@@ -215,7 +227,6 @@ task :backupData, [:instance] do |task, args|
     #   puts caller
   end
 end
-
 
 desc 'backup code of an particular instance'
 task :backupCode, [:instance] do |task, args|

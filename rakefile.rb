@@ -110,8 +110,11 @@ class MoodleInstance
     dataroot_dirname = File.dirname(dataroot)
     dataroot_files   = File.basename(dataroot)
 
-    cd(dataroot_dirname) do
-      cmd = %Q{tar -cvzf '#{mk_backup_filename('files')}' '#{dataroot_files}'}
+    exclude = ["cache", "localcache", "temp", "trashdir"].map{|i| "--exclude='#{dataroot_files}/#{i}'" }.join(" ")
+
+    FileUtils.cd(dataroot_dirname) do
+      cmd = %Q{tar #{exclude}  -cvzf '#{mk_backup_filename('files')}' '#{dataroot_files}'}
+      puts cmd
       system cmd
     end
     nil

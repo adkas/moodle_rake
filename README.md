@@ -10,6 +10,10 @@ the same server it provides backup / restore tasks.
 -   ruby 1.8.7 - this version is stil found on most of the shared
     hosters ..
 
+-   I even run it with travelling ruby (http://phusion.github.io/traveling-ruby/) as our
+    web hoster no longer supports ruby in shared hosting plans.
+
+
 ## Installation
 
 -   ssh to your webserver
@@ -22,7 +26,9 @@ the same server it provides backup / restore tasks.
          |    +-- moodle_data          # moodle datafolder - foldername taken from config.php
          |    +-- install_config       # hardcoded in rakefile.rb
          |        |
-         |        +--  config.php      # the config file for moodle_live             
+         |        +--  config.php      # the config file for moodle_live  
+         |        +--  .htaccess
+         |        +--  php.ini         
          |    +-- rakefile.rb          # rakfile of this project
          |
          +-- <another moodle instance>
@@ -62,6 +68,10 @@ the same server it provides backup / restore tasks.
 
 -   you can run a cron-job to automate the backup. Use
     `cron_backup_moodle.sh` to do so.
+    
+-   note that install_config is there to keep current versions of file
+    for your paticular installation. You need to copy them to moodle_code
+    manually if needed.    
     
 ## Contributing
 

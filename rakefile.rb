@@ -28,14 +28,14 @@ class MoodleRakeHelper
   end
 
   def getInstanceNames
-    candidates = Dir["#{@scriptroot}/../*/config.php"]
+    candidates = Dir["#{@scriptroot}/../*/install_config/config.php"]
     instances  = candidates.map { |candidate| getInstanceName(candidate) }.compact
     instances
   end
 
   def getInstanceName(candidate)
     result = nil
-    result = File.basename(File.dirname(candidate)) if isInstance?(candidate)
+    result = File.basename(File.dirname(File.dirname(candidate))) if isInstance?(candidate)
   end
 
   def isInstance?(candidate)
